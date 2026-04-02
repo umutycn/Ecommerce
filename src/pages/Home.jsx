@@ -1,4 +1,4 @@
-import { ProductCard, ProductSkeleton } from "../components";
+import { ProductCard, StateView } from "../components";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { demoProducts } from "../data/demoProducts";
@@ -62,19 +62,41 @@ function getQueryFromSearchParams(searchParams) {
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [loadAttempt, setLoadAttempt] = useState(0);
+  const [products, setProducts] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [productQuery, setProductQuery] = useState(() => getQueryFromSearchParams(searchParams));
   const [favoriteProductIds, setFavoriteProductIds] = useLocalStorage("favoriteProductIds", []);
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
   const [highlightedSuggestionIndex, setHighlightedSuggestionIndex] = useState(-1);
 
-  useEffect(() => {
+  const startLoading = () => {
+    setIsLoading(true);
+    setLoadError("");
+
     const timer = setTimeout(() => {
-      setIsLoading(false);
+      try {
+        if (!Array.isArray(demoProducts)) {
+          throw new Error("Urun verisi okunamadi.");
+        }
+
+        setProducts(demoProducts);
+        setIsLoading(false);
+      } catch {
+        setLoadError("Urunler yuklenirken bir sorun olustu.");
+        setIsLoading(false);
+      }
     }, 900);
 
+    return timer;
+  };
+
+  useEffect(() => {
+    const timer = startLoading();
+
     return () => clearTimeout(timer);
-  }, []);
+  }, [loadAttempt]);
 
   useEffect(() => {
     const nextQuery = getQueryFromSearchParams(searchParams);
@@ -179,7 +201,7 @@ export default function Home() {
   const minRating = productQuery.minRating === "all" ? null : Number(productQuery.minRating);
   const searchSuggestions = Array.from(
     new Set(
-      demoProducts
+      products
         .filter((product) => {
           if (!normalizedSearch) {
             return false;
@@ -235,7 +257,7 @@ export default function Home() {
     }
   };
 
-  const visibleProducts = demoProducts
+  const visibleProducts = products
     .filter((product) => {
       if (!normalizedSearch) {
         return true;
@@ -303,15 +325,53 @@ export default function Home() {
       return 0;
     });
 
+  const renderHeader = (
+    <div className="mb-8">
+      <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">Yeni Sezon</p>
+      <h1 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">Populer Teknoloji Urunleri</h1>
+      <p className="mt-3 max-w-2xl text-slate-600">
+        Premium urun seckisi, hizli sepet aksiyonlari ve profesyonel alisveris deneyimi.
+      </p>
+    </div>
+  );
+
+  if (loadError) {
+    return (
+      <main className="mx-auto max-w-6xl px-4 py-8">
+        {renderHeader}
+        <StateView
+          variant="error"
+          title="Urunler Yuklenemedi"
+          description={loadError}
+          actionLabel="Tekrar Dene"
+          onAction={() => {
+            setLoadAttempt((prev) => prev + 1);
+          }}
+        />
+      </main>
+    );
+  }
+
+  if (!isLoading && products.length === 0) {
+    return (
+      <main className="mx-auto max-w-6xl px-4 py-8">
+        {renderHeader}
+        <StateView
+          variant="empty"
+          title="Urun Verisi Bulunamadi"
+          description="Urunler su an listelenemiyor. Tekrar deneyin."
+          actionLabel="Tekrar Dene"
+          onAction={() => {
+            setLoadAttempt((prev) => prev + 1);
+          }}
+        />
+      </main>
+    );
+  }
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-8">
-        <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">Yeni Sezon</p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">Populer Teknoloji Urunleri</h1>
-        <p className="mt-3 max-w-2xl text-slate-600">
-          Premium urun seckisi, hizli sepet aksiyonlari ve profesyonel alisveris deneyimi.
-        </p>
-      </div>
+      {renderHeader}
 
       <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-8">
@@ -458,22 +518,34 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {isLoading
-          ? Array.from({ length: 6 }).map((_, index) => <ProductSkeleton key={index} />)
-          : visibleProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                isFavorite={favoriteProductIds.includes(product.id)}
-                onToggleFavorite={handleToggleFavorite}
-              />
-            ))}
-      </section>
+      {isLoading ? (
+        <div className="mt-6">
+          <StateView
+            variant="loading"
+            title="Urunler Yukleniyor"
+            description="Urun listesi hazirlaniyor. Lutfen kisa bir sure bekleyin."
+          />
+        </div>
+      ) : (
+        <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {visibleProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              isFavorite={favoriteProductIds.includes(product.id)}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          ))}
+        </section>
+      )}
 
       {!isLoading && visibleProducts.length === 0 && (
-        <div className="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center text-slate-600">
-          Aramana uygun urun bulunamadi. Filtreleri temizleyip tekrar dene.
+        <div className="mt-6">
+          <StateView
+            variant="empty"
+            title="Uygun Urun Bulunamadi"
+            description="Aramana uygun urun bulunamadi. Filtreleri temizleyip tekrar dene."
+          />
         </div>
       )}
     </main>

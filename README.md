@@ -131,31 +131,7 @@ Kullanım alanları:
 - Ana sayfa boş sonuç
 - Sepet boş durumu
 
-## 6. Ekran Görüntüleri
-
-Bu repoda henüz uygulama ekran görüntüsü dosyaları ayrı bir klasörde tutulmamaktadır.
-
-README içine ekran görüntüsü eklemek için önerilen yapı:
-
-```text
-docs/
-	screenshots/
-		home.png
-		cart.png
-```
-
-Örnek Markdown kullanımı:
-
-```md
-![Ana Sayfa](docs/screenshots/home.png)
-![Sepet Sayfası](docs/screenshots/cart.png)
-```
-
-Not:
-- Ürün görselleri `src/img/` altındadır; bunlar uygulama içi ürün kartları için kullanılır.
-- README ekran görüntüleri için ayrı bir klasör kullanmak bakım açısından daha sağlıklıdır.
-
-## 7. Veri ve Kalıcılık
+## 6. Veri ve Kalıcılık
 
 ### 6.1 Ürün Verisi
 - Ürün mock verileri: `src/data/demoProducts.js`
@@ -166,7 +142,7 @@ Not:
 - `favoriteProductIds`: Favori ürün ID listesi
 - `appliedCouponCode`: Uygulanan kupon kodu
 
-## 8. Dosya Yapısı (Özet)
+## 7. Dosya Yapısı (Özet)
 
 ```text
 src/
@@ -188,14 +164,14 @@ src/
 		...urun gorselleri...
 ```
 
-## 9. Geliştirme Notları
+## 8. Geliştirme Notları
 
 - Filtre state'i tek bir obje altında yönetilir (`productQuery`).
 - Query-string senkronu sayesinde paylaşılabilir filtreli URL üretilebilir.
 - Görseller lokal dosyalardan beslendiği için dış URL erişim sorunları minimize edilmiştir.
 - Kart görselleri kutuya sığacak şekilde ölçeklenir (`object-contain`).
 
-## 10. Olası Sonraki Adımlar
+## 9. Olası Sonraki Adımlar
 
 - Gerçek backend API entegrasyonu
 - Ürün detay sayfasının veriyle bağlanması
@@ -203,6 +179,6 @@ src/
 - Kullanıcı oturumu ve sipariş geçmişi modülü
 - Admin paneli (ürün/stock yönetimi)
 
-## 11. Lisans
+## 10. Lisans
 
 Bu proje kişisel ve eğitim amaçlı kullanım için hazırlanmıştır. İhtiyaca göre lisans dosyası (`LICENSE`) ekleyebilirsiniz.

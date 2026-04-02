@@ -3,3 +3,8 @@ export { default as ProductCard } from "./ProductCard";
 export { default as ProductSkeleton } from "./ProductSkeleton";
 export { default as Navbar } from "./Navbar";
 export { default as StateView } from "./StateView";
+export { default as HomeHeader } from "./HomeHeader";
+export { default as ProductFilters } from "./ProductFilters";
+export { default as ProductGrid } from "./ProductGrid";
+export { default as CartItemsList } from "./CartItemsList";
+export { default as CartSummary } from "./CartSummary";

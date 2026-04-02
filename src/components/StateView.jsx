@@ -23,8 +23,22 @@ export default function StateView({
     error: "Lutfen tekrar deneyin.",
   };
 
+  const regionRoleByVariant = {
+    loading: "status",
+    empty: "status",
+    error: "alert",
+  };
+
+  const liveByVariant = {
+    loading: "polite",
+    empty: "polite",
+    error: "assertive",
+  };
+
   return (
     <div
+      role={regionRoleByVariant[variant] || "status"}
+      aria-live={liveByVariant[variant] || "polite"}
       className={`rounded-xl border border-dashed p-6 text-center ${
         variantStyles[variant] || variantStyles.empty
       }`}

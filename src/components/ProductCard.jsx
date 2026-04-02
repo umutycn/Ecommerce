@@ -1,8 +1,9 @@
 import { formatPrice } from "../utils";
 import { useCart } from "../context";
 import { toast } from "react-hot-toast";
+import { memo } from "react";
 
-export default function ProductCard({ product, isFavorite = false, onToggleFavorite }) {
+function ProductCard({ product, isFavorite = false, onToggleFavorite }) {
   const { addToCart } = useCart();
   const isOutOfStock = !product.inStock;
   const isTrending = (product.popularity ?? 0) >= 90;
@@ -57,6 +58,8 @@ export default function ProductCard({ product, isFavorite = false, onToggleFavor
         <img
           src={product.image}
           alt={product.name}
+          loading="lazy"
+          decoding="async"
           onError={(event) => {
             event.currentTarget.onerror = null;
             event.currentTarget.src = fallbackImage;
@@ -72,6 +75,12 @@ export default function ProductCard({ product, isFavorite = false, onToggleFavor
           <button
             type="button"
             onClick={handleToggleFavorite}
+            aria-pressed={isFavorite}
+            aria-label={
+              isFavorite
+                ? `${product.name} urununu favorilerden kaldir`
+                : `${product.name} urununu favorilere ekle`
+            }
             className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
               isFavorite
                 ? "border-rose-200 bg-rose-100 text-rose-700 hover:bg-rose-200"
@@ -109,6 +118,11 @@ export default function ProductCard({ product, isFavorite = false, onToggleFavor
             type="button"
             onClick={handleAddToCart}
             disabled={isOutOfStock}
+            aria-label={
+              isOutOfStock
+                ? `${product.name} urunu stokta yok`
+                : `${product.name} urununu sepete ekle`
+            }
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-400"
           >
             {isOutOfStock ? "Stokta Yok" : "Sepete Ekle"}
@@ -118,3 +132,5 @@ export default function ProductCard({ product, isFavorite = false, onToggleFavor
     </article>
   );
 }
+
+export default memo(ProductCard);

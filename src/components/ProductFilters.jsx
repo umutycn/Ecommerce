@@ -162,30 +162,40 @@ export default function ProductFilters({
 
         <label
           htmlFor={inStockOnlyInputId}
-          className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700"
+          className={`self-end flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 text-sm font-medium transition ${
+            productQuery.inStockOnly
+              ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+              : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+          }`}
+          title="Sadece stokta olan urunleri goster"
         >
           <input
             id={inStockOnlyInputId}
             type="checkbox"
             checked={productQuery.inStockOnly}
             onChange={(event) => onQueryChange("inStockOnly", event.target.checked)}
-            className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400"
+            className="sr-only"
           />
-          Sadece Stokta Olanlar
+          <span className="text-base leading-none">Stokta</span>
         </label>
 
         <label
           htmlFor={favoritesOnlyInputId}
-          className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700"
+          className={`self-end flex h-10 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border px-3 text-sm font-medium transition ${
+            productQuery.favoritesOnly
+              ? "border-rose-300 bg-rose-50 text-rose-700"
+              : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+          }`}
+          title="Sadece favori urunleri goster"
         >
           <input
             id={favoritesOnlyInputId}
             type="checkbox"
             checked={productQuery.favoritesOnly}
             onChange={(event) => onQueryChange("favoritesOnly", event.target.checked)}
-            className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400"
+            className="sr-only"
           />
-          Sadece Favoriler
+          <span className="text-base leading-none">Favoriler</span>
         </label>
       </div>
 
